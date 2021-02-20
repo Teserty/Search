@@ -1,6 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Lemmer {
@@ -21,7 +22,11 @@ public class Lemmer {
             System.out.print(e);
         }
     }
-    public String getLemmitizedWord(String word){
-        return words.get(word);
+    public HashMap<String, Double> getLemmitizedWord(Map<String, Double> wordlist){
+        HashMap<String, Double> rwords = new HashMap<>();
+        for(String key: wordlist.keySet()){
+            rwords.put(words.get(key), wordlist.get(key));
+        }
+        return rwords;
     }
 }

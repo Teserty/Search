@@ -18,10 +18,9 @@ public class VectorSearch {
 
         String searchCommand = "удобный OR навсегда";
         // ToDo - лемманизировать все слова запроса
-        lemmer.getLemmitizedWord(searchCommand.split(" ")[0]);
-        List<String> keyWordsList = new ArrayList<>();
-        Map<String, Double> keyWordsTF = getKeyWordsTFFromCommand(searchCommand, keyWordsList);
 
+        List<String> keyWordsList = new ArrayList<>();
+        Map<String, Double> keyWordsTF = lemmer.getLemmitizedWord(getKeyWordsTFFromCommand(searchCommand, keyWordsList));
         // расчитываем длину запроса
         Double commandLength = 0.0;
         for (String keyWord:keyWordsTF.keySet()) {
