@@ -15,51 +15,53 @@ public class VectorSearch {
         //Получается, при запросе мы считаем сумму idf слов запроса,
         // а потом для всех страниц, отобранных булевым поиском считаем сходство с запросом
         // Закидываем index total в карту
-
-        String searchCommand = "удобный OR навсегда";
-        // ToDo - лемманизировать все слова запроса
-
-        List<String> keyWordsList = new ArrayList<>();
-        Map<String, Double> keyWordsTF = lemmer.getLemmitizedWord(getKeyWordsTFFromCommand(searchCommand, keyWordsList));
-        // расчитываем длину запроса
-        Double commandLength = 0.0;
-        for (String keyWord:keyWordsTF.keySet()) {
-            double a = keyWordsTF.get(keyWord);
-            commandLength += a*a;
-        }
-        commandLength = Math.sqrt(commandLength);
-
-        Map<String, List<Double>> keyWordsData = readKeyWordsData("resources/sladost.txt", keyWordsList);
-        //System.out.println(keyWordsData.size() + " слов всего");
-
-        // булевым поиском получаем список документов
-        // ToDo положи булевый поиск в тот же пакет
-        List<Integer> correctPages = BooleanSearch.getCorrectPages(searchCommand);
-
-        // для каждого документа считаем tf-idf, длину, схожесть с запросом. Сохраняем в курту слово-схожесть
-
-        Map<Integer, Double> pagesSimilarity = new HashMap<>();
-        for (Integer i : correctPages) {
-            // считаем длину документа
-            Double documentLength = 0.0;
-            for (String keyWord:keyWordsData.keySet()) {
-                double a = keyWordsData.get(keyWord).get(i);
-                documentLength += a*a;
+        Scanner sc = new Scanner(System.in);
+        String searchCommand = " ";
+        while(!searchCommand.equals("exit")) {
+            // ToDo - лемманизировать все слова запроса
+            searchCommand = sc.nextLine();
+            List<String> keyWordsList = new ArrayList<>();
+            Map<String, Double> keyWordsTF = lemmer.getLemmitizedWord(getKeyWordsTFFromCommand(searchCommand, keyWordsList));
+            // расчитываем длину запроса
+            Double commandLength = 0.0;
+            for (String keyWord : keyWordsTF.keySet()) {
+                double a = keyWordsTF.get(keyWord);
+                commandLength += a * a;
             }
-            documentLength = Math.sqrt(documentLength);
-            // считаем косинусное сходство по последней формуле
-            double a = 0;
-            for (String keyWord:keyWordsData.keySet()) {
-                a += keyWordsData.get(keyWord).get(i)*keyWordsTF.get(keyWord);
-            }
-            Double similarity = a/(documentLength*commandLength);
+            commandLength = Math.sqrt(commandLength);
 
-            pagesSimilarity.put(i,similarity);
+            Map<String, List<Double>> keyWordsData = readKeyWordsData("Tasks/task4/TF_IDF_revised.txt", keyWordsList);
+            //System.out.println(keyWordsData.size() + " слов всего");
+
+            // булевым поиском получаем список документов
+            // ToDo положи булевый поиск в тот же пакет
+            List<Integer> correctPages = BooleanSearch.getCorrectPages(searchCommand);
+
+            // для каждого документа считаем tf-idf, длину, схожесть с запросом. Сохраняем в курту слово-схожесть
+
+            Map<Integer, Double> pagesSimilarity = new HashMap<>();
+            for (Integer i : correctPages) {
+                // считаем длину документа
+                Double documentLength = 0.0;
+                for (String keyWord : keyWordsData.keySet()) {
+                    double a = keyWordsData.get(keyWord).get(i);
+                    documentLength += a * a;
+                }
+                documentLength = Math.sqrt(documentLength);
+                // считаем косинусное сходство по последней формуле
+                double a = 0;
+                for (String keyWord : keyWordsData.keySet()) {
+                    a += keyWordsData.get(keyWord).get(i) * keyWordsTF.get(keyWord);
+                }
+                Double similarity = a / (documentLength * commandLength);
+
+                pagesSimilarity.put(i, similarity);
+            }
+            // ToDo отсортировать этот список страниц по степени схожести
+            List<Integer> keys = new ArrayList<>(List.copyOf(pagesSimilarity.keySet()));
+            Collections.sort(keys);
+            System.out.println(pagesSimilarity.toString());
         }
-        // ToDo отсортировать этот список страниц по степени схожести
-        List<Integer> keys = new ArrayList<>(List.copyOf(pagesSimilarity.keySet()));
-        Collections.sort(keys);
-        System.out.println(pagesSimilarity.toString());
     }
 
     // это изначально был метод для keyWordsList'a, но больно уж захотелось и рыбку съесть и всего остального

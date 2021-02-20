@@ -9,7 +9,7 @@ public class Lemmer {
     public Lemmer(){
         words = new HashMap<>();
         try {
-            FileReader reader = new FileReader("./Total/task2/lemmer total.txt");
+            FileReader reader = new FileReader("./Tasks/task2/lemmer total.txt");
             Scanner scan = new Scanner(reader);
             while (scan.hasNext()) {
                 String line = scan.nextLine();
