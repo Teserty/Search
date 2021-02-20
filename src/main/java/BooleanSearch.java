@@ -7,7 +7,7 @@ public class BooleanSearch {
     public static LinkedList<Integer> getCorrectPages(String searchCommand){
         // Закидываем index total в карту
         // ToDo - отредачь путь, если нужно
-        Map<String, LinkedList<Integer>> tokensUsages = readIndex("resources/index total.txt");
+        Map<String, LinkedList<Integer>> tokensUsages = readIndex("Tasks/task3/index total.txt");
 
         //результат запроса
         LinkedList<Integer> result = null;
