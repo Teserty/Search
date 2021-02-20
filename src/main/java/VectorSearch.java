@@ -1,7 +1,4 @@
 import org.junit.*;
-import org.python.core.PyObject;
-import org.python.util.PythonInterpreter;
-
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -11,8 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
-
-import static javatests.TestSupport.assertEquals;
 
 public class VectorSearch {
     static Lemmer lemmer = new Lemmer();
@@ -86,7 +81,6 @@ public class VectorSearch {
                     keyWords.put(words[i], a);
                     keyWordsList.add(words[i]);
                 }
-
             }
         }
         return keyWords;
@@ -94,7 +88,6 @@ public class VectorSearch {
 
     public static Map<String, List<Double>> readKeyWordsData(String indexPath, List<String> keyWords) {
         Map<String, List<Double>> keyWordsData = new HashMap<>();
-
         try(BufferedReader br = new BufferedReader(new FileReader(indexPath))) {
             String s;
             while (!keyWords.isEmpty() & (s=br.readLine())!=null) {
