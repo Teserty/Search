@@ -1,24 +1,16 @@
-import org.junit.Test;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
 public class BooleanSearch {
-    @Test
-    public void test1(){
+    public static LinkedList<Integer> getCorrectPages(String searchCommand){
         // Закидываем index total в карту
         // ToDo - отредачь путь, если нужно
         Map<String, LinkedList<Integer>> tokensUsages = readIndex("resources/index total.txt");
-        System.out.println(tokensUsages.size() + " слов всего");
 
         //результат запроса
         LinkedList<Integer> result = null;
-        //запрос
-        // ToDo вот тут поиграйся с запросами. Почему-то некоторые зависают, некоторые нет
-        String searchCommand = "NOT удобный AND срываться OR экстремизм ";
-//        String searchCommand = "удобный OR навсегда";// зависло
 
         // ToDo Скобки
 
@@ -41,7 +33,7 @@ public class BooleanSearch {
             i++;
         }
 
-        System.out.println(result.toString());
+
 
         // после токена мы всегда ждем AND, OR или конец запроса. После AND и OR всегда ждем токен или NOT
         while (i < words.length) {
@@ -52,9 +44,7 @@ public class BooleanSearch {
                     operationNOT(tokensUsages.get(words[i]));
                 }
                 System.out.println(tokensUsages.get(words[i]));
-                // ToDo зависает вот тут
                 result = operationAND(result, tokensUsages.get(words[i]));
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             } else
             if (words[i].equals("OR")) {
                 i++;
@@ -62,15 +52,11 @@ public class BooleanSearch {
                     i++;
                     operationNOT(tokensUsages.get(words[i]));
                 }
-                System.out.println(tokensUsages.get(words[i]));
-                // ToDo зависает вот тут
                 result = operationOR(result, tokensUsages.get(words[i]));
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
             i++;
         }
-
-        System.out.println(result);
+        return result;
     }
 
 
