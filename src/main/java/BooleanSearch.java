@@ -4,31 +4,29 @@ import java.io.IOException;
 import java.util.*;
 
 public class BooleanSearch {
+    static Lemmer lemmer = VectorSearch.lemmer;
     public static LinkedList<Integer> getCorrectPages(String searchCommand){
         // Закидываем index total в карту
         // ToDo - отредачь путь, если нужно
         Map<String, LinkedList<Integer>> tokensUsages = readIndex("Tasks/task3/index total.txt");
 
         //результат запроса
-        LinkedList<Integer> result = null;
+        LinkedList<Integer> result = new LinkedList<>();
 
         // ToDo Скобки
 
         // разбиваем запрос на слова
         String[] words = searchCommand.split("\\s");
-        for (String word: words) {
-            System.out.println(word);
-        }
 
         // отдельно считываем первое слово, оно может либо токеном, либо NOT, выбираем соответствующее множество страниц
         int i = 0;
         if (words.length > 0) {
-            if (tokensUsages.containsKey(words[i])) {
-                result = tokensUsages.get(words[i]);
+            if (tokensUsages.containsKey(lemmer.getLemmitizedWord(words[i]))) {
+                result = tokensUsages.get(lemmer.getLemmitizedWord(words[i]));
 
             } else if(words[0].equals("NOT")) {
                 i++;
-                result = operationNOT(tokensUsages.get(words[i]));
+                result = operationNOT(tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
             }
             i++;
         }
@@ -43,8 +41,7 @@ public class BooleanSearch {
                     i++;
                     operationNOT(tokensUsages.get(words[i]));
                 }
-                System.out.println(tokensUsages.get(words[i]));
-                result = operationAND(result, tokensUsages.get(words[i]));
+                result = operationAND(result, tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
             } else
             if (words[i].equals("OR")) {
                 i++;
@@ -52,7 +49,7 @@ public class BooleanSearch {
                     i++;
                     operationNOT(tokensUsages.get(words[i]));
                 }
-                result = operationOR(result, tokensUsages.get(words[i]));
+                result = operationOR(result, tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
             }
             i++;
         }
@@ -65,15 +62,12 @@ public class BooleanSearch {
         // ToDo зависает на какой-то итерации этого цикла
         while (!list1.isEmpty() & !list2.isEmpty()) {
             if (list1.getFirst() < list2.getFirst()) {
-                System.out.println(list1.getFirst() + "удобный");
                 list1.removeFirst();
             } else
             if (list1.getFirst() > list2.getFirst()) {
-                System.out.println(list2.getFirst() + "навсегда");
                 list2.removeFirst();
             } else
             if (list1.getFirst().equals(list2.getFirst())) {
-                System.out.println(list1.getFirst() + "оба");
                 resultList.add(list1.removeFirst());
                 list2.removeFirst();
             }
@@ -86,15 +80,12 @@ public class BooleanSearch {
         // ToDo зависает на какой-то итерации этого цикла
         while (!list1.isEmpty() & !list2.isEmpty()) {
             if (list1.getFirst() < list2.getFirst()) {
-                System.out.println(list1.getFirst() + "удобный");
                 resultList.add(list1.removeFirst());
             } else
             if (list1.getFirst() > list2.getFirst()) {
-                System.out.println(list2.getFirst() + "навсегда");
                 resultList.add(list2.removeFirst());
             } else
             if (list1.getFirst().equals(list2.getFirst())) {
-                System.out.println(list1.getFirst() + "оба");
                 resultList.add(list1.removeFirst());
                 list2.removeFirst();
             }

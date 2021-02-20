@@ -1,3 +1,5 @@
+import org.junit.jupiter.api.Test;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -22,11 +24,20 @@ public class Lemmer {
             System.out.print(e);
         }
     }
+    public String getLemmitizedWord(String word){
+        return words.get(word);
+    }
     public HashMap<String, Double> getLemmitizedWord(Map<String, Double> wordlist){
         HashMap<String, Double> rwords = new HashMap<>();
         for(String key: wordlist.keySet()){
             rwords.put(words.get(key), wordlist.get(key));
         }
         return rwords;
+    }
+    @Test
+    public void testGetLemmitizedWord(){
+        HashMap<String, Double> a = new HashMap<>();
+        a.put("AND", 0.0);
+        System.out.print(getLemmitizedWord(a).keySet().contains("AND"));
     }
 }
