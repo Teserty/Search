@@ -64,15 +64,23 @@ public class VectorSearch {
 
                 pagesSimilarity.put(i, similarity);
             }
-            HashMap<Double, Integer> simil = new HashMap<>();
+            HashMap<Double, List<Integer>> simil = new HashMap<>();
+            System.out.print(simil.size());
             for(Integer s: pagesSimilarity.keySet()){
-                simil.put(pagesSimilarity.get(s), s);
+                if (simil.get(pagesSimilarity.get(s))==null) {
+                    simil.put(pagesSimilarity.get(s), Collections.singletonList(s));
+                }else{
+                    List<Integer> list = new LinkedList<>(simil.get(pagesSimilarity.get(s)));
+                    list.add(s);
+                    simil.put(pagesSimilarity.get(s), list);
+                }
             }
             List<Double> keys = new ArrayList<>(List.copyOf(simil.keySet()));
             Collections.sort(keys);
             System.out.print("Найдено:");
-            for (int i = keys.size()-1; i>0; i--){
-                System.out.println(index.get(simil.get(keys.get(i))));
+            for (int i = keys.size()-1; i>=0; i--){
+                for (Integer y: simil.get(keys.get(i)))
+                    System.out.println(index.get(y));
                 //System.out.println(keys.get(i) + " " + simil.get(keys.get(i)));
             }
         }

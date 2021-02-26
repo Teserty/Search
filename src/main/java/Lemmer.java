@@ -16,7 +16,7 @@ public class Lemmer {
             while (scan.hasNext()) {
                 String line = scan.nextLine();
                 String [] word_a = line.split(" ");
-                for (int i = 1; i < word_a.length; i++){
+                for (int i = 0; i < word_a.length; i++){
                     words.put(word_a[i], word_a[0]);
                 }
             }
