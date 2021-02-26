@@ -27,8 +27,7 @@ public class VectorSearch {
         setIndex();
         String searchCommand = " ";
         while(!searchCommand.equals("exit")) {
-            // ToDo - лемманизировать все слова запроса
-            searchCommand = sc.nextLine();
+            searchCommand = sc.nextLine().toLowerCase();
 //            List<String> keyWordsList = new ArrayList<>();
             Map<String, Double> keyWordsTF = lemmer.getLemmitizedWord(getKeyWordsTFFromCommand(searchCommand));
             // расчитываем длину запроса
@@ -46,7 +45,6 @@ public class VectorSearch {
 
 
             // булевым поиском получаем список документов
-            // ToDo положи булевый поиск в тот же пакет
             List<Integer> correctPages = BooleanSearch.getCorrectPages(searchCommand);
             Map<Integer, Double> pagesSimilarity = new HashMap<>();
             for (Integer i : correctPages) {
@@ -72,7 +70,8 @@ public class VectorSearch {
             }
             List<Double> keys = new ArrayList<>(List.copyOf(simil.keySet()));
             Collections.sort(keys);
-            for (Integer i = keys.size()-1; i > 0; i--){
+            System.out.print("Найдено:");
+            for (int i = keys.size()-1; i>0; i--){
                 System.out.println(index.get(simil.get(keys.get(i))));
                 //System.out.println(keys.get(i) + " " + simil.get(keys.get(i)));
             }

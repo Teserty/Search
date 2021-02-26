@@ -7,7 +7,6 @@ public class BooleanSearch {
     static Lemmer lemmer = VectorSearch.lemmer;
     public static LinkedList<Integer> getCorrectPages(String searchCommand){
         // Закидываем index total в карту
-        // ToDo - отредачь путь, если нужно
         Map<String, LinkedList<Integer>> tokensUsages = readIndex("Tasks/task3/index total.txt");
 
         //результат запроса
@@ -24,7 +23,7 @@ public class BooleanSearch {
             if (tokensUsages.containsKey(lemmer.getLemmitizedWord(words[i]))) {
                 result = tokensUsages.get(lemmer.getLemmitizedWord(words[i]));
 
-            } else if(words[0].equals("NOT")) {
+            } else if(words[0].equals("not")) {
                 i++;
                 result = operationNOT(tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
             }
@@ -35,17 +34,17 @@ public class BooleanSearch {
 
         // после токена мы всегда ждем AND, OR или конец запроса. После AND и OR всегда ждем токен или NOT
         while (i < words.length) {
-            if (words[i].equals("AND")) {
+            if (words[i].equals("and")) {
                 i++;
-                if (words[i].equals("NOT")) {
+                if (words[i].equals("not")) {
                     i++;
                     operationNOT(tokensUsages.get(words[i]));
                 }
                 result = operationAND(result, tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
             } else
-            if (words[i].equals("OR")) {
+            if (words[i].equals("or")) {
                 i++;
-                if (words[i].equals("NOT")) {
+                if (words[i].equals("not")) {
                     i++;
                     operationNOT(tokensUsages.get(words[i]));
                 }
@@ -59,7 +58,6 @@ public class BooleanSearch {
 
     public static LinkedList<Integer> operationAND(LinkedList<Integer> list1, LinkedList<Integer> list2) {
         LinkedList<Integer> resultList = new LinkedList<>();
-        // ToDo зависает на какой-то итерации этого цикла
         while (!list1.isEmpty() & !list2.isEmpty()) {
             if (list1.getFirst() < list2.getFirst()) {
                 list1.removeFirst();
@@ -77,7 +75,6 @@ public class BooleanSearch {
 
     public static LinkedList<Integer> operationOR(LinkedList<Integer> list1, LinkedList<Integer> list2) {
         LinkedList<Integer> resultList = new LinkedList<>();
-        // ToDo зависает на какой-то итерации этого цикла
         while (!list1.isEmpty() & !list2.isEmpty()) {
             if (list1.getFirst() < list2.getFirst()) {
                 resultList.add(list1.removeFirst());
