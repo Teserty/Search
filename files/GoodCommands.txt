@@ -1,0 +1,7 @@
+удобный AND навсегда
+амбар OR совхоз
+NOT фанерный AND загрязнитель
+малоярославец AND можайск OR ржев
+малоярославец AND NOT можайск OR ржев
+AND AND AND OR OR OR NOT OR
+AND AND AND OR OR OR OR
