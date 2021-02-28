@@ -38,21 +38,28 @@ public class BooleanSearch {
         // после токена мы всегда ждем AND, OR или конец запроса. После AND и OR всегда ждем токен или NOT
         while (i < words.length) {
             if (words[i].equals("and")) {
+                System.out.print(words[i] + " ");
                 i++;
                 if (words[i].equals("not")) {
+                    System.out.print(words[i] + " ");
                     i++;
-                    operationNOT(tokensUsages.get(words[i]));
+                    result = operationAND(result, operationNOT(tokensUsages.get(lemmer.getLemmitizedWord(words[i]))));
+                } else {
+                    result = operationAND(result, tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
                 }
-                result = operationAND(result, tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
             } else
             if (words[i].equals("or")) {
+                System.out.print(words[i] + " ");
                 i++;
                 if (words[i].equals("not")) {
+                    System.out.print(words[i] + " ");
                     i++;
-                    operationNOT(tokensUsages.get(words[i]));
+                    result = operationOR(result, operationNOT(tokensUsages.get(lemmer.getLemmitizedWord(words[i]))));
+                } else {
+                    result = operationOR(result, tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
                 }
-                result = operationOR(result, tokensUsages.get(lemmer.getLemmitizedWord(words[i])));
             }
+            System.out.print(words[i] + " ");
             i++;
         }
         return result;
@@ -137,21 +144,21 @@ public class BooleanSearch {
         String[] words = searchCommand.split("\\s");
         int i = 0;
         if (words.length > 0) {
-            if(words[0].equals("NOT")) {
+            if(words[0].equals("not")) {
                 i++;
             }
             i++;
         }
         while (i < words.length) {
-            if (words[i].equals("AND")) {
+            if (words[i].equals("and")) {
                 i++;
-                if (words[i].equals("NOT")) {
+                if (words[i].equals("not")) {
                     i++;
                 }
             } else
-            if (words[i].equals("OR")) {
+            if (words[i].equals("or")) {
                 i++;
-                if (words[i].equals("NOT")) {
+                if (words[i].equals("not")) {
                     i++;
                 }
             } else {

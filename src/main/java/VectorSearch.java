@@ -28,7 +28,7 @@ public class VectorSearch {
         Scanner sc = new Scanner(System.in);
         setIndex();
         String searchCommand = " ";
-        //Map<String, List<Double>> keyWordsData = readAllWordsData("Tasks/task4/TF_IDF_revised.txt");
+        Map<String, List<Double>> allWordsData = readAllWordsData("Tasks/task4/TF_IDF_revised.txt");
         while(!searchCommand.equals("exit")) {
             searchCommand = sc.nextLine().toLowerCase();
             if(BooleanSearch.isCommandCorrect(searchCommand)) {
@@ -43,49 +43,55 @@ public class VectorSearch {
                 commandLength = Math.sqrt(commandLength);
 
                 Set<String> keyWordsSet = keyWordsTF.keySet();
-                Map<String, List<Double>> keyWordsData = readKeyWordsData("Tasks/task4/TF_IDF_revised.txt", keyWordsSet);
-                //System.out.println(keyWordsData.size() + " слов всего");
-                Map<String, Double> keyWordsTFIDF = getKeyWordsTFIDFFromTF(keyWordsTF, keyWordsData);
+                Map<String, List<Double>> keyWordsData = getKeyWordsData(keyWordsSet, allWordsData);
+                if (keyWordsData.containsKey(null)) {
+                    System.out.println("Страницы по данному запросу не найдены");
+                } else {
+                    System.out.println(keyWordsData.size() + " слов всего \n" +
+                            keyWordsData.toString());
+                    Map<String, Double> keyWordsTFIDF = getKeyWordsTFIDFFromTF(keyWordsTF, keyWordsData);
 
+                    // булевым поиском получаем список документов
+                    List<Integer> correctPages = BooleanSearch.getCorrectPages(searchCommand);
+                    System.out.println(correctPages.toString());
+                    Map<Integer, Double> pagesSimilarity = new HashMap<>();
+                    for (Integer i : correctPages) {
+                        // считаем длину документа
+                        Double documentLength = 0.0;
+                        for (String keyWord : keyWordsData.keySet()) {
+                            double a = keyWordsData.get(keyWord).get(i + 1);
+                            documentLength += a * a;
+                        }
+                        documentLength = Math.sqrt(documentLength);
+                        // считаем косинусное сходство по последней формуле
+                        double a = 0;
+                        for (String keyWord : keyWordsData.keySet()) {
+                            a += keyWordsData.get(keyWord).get(i + 1) * keyWordsTFIDF.get(keyWord);
+                        }
+                        Double similarity = a / (documentLength * commandLength);
 
-                // булевым поиском получаем список документов
-                List<Integer> correctPages = BooleanSearch.getCorrectPages(searchCommand);
-                Map<Integer, Double> pagesSimilarity = new HashMap<>();
-                for (Integer i : correctPages) {
-                    // считаем длину документа
-                    Double documentLength = 0.0;
-                    for (String keyWord : keyWordsData.keySet()) {
-                        double a = keyWordsData.get(keyWord).get(i + 1);
-                        documentLength += a * a;
+                        pagesSimilarity.put(i, similarity);
                     }
-                    documentLength = Math.sqrt(documentLength);
-                    // считаем косинусное сходство по последней формуле
-                    double a = 0;
-                    for (String keyWord : keyWordsData.keySet()) {
-                        a += keyWordsData.get(keyWord).get(i + 1) * keyWordsTFIDF.get(keyWord);
+                    HashMap<Double, List<Integer>> simil = new HashMap<>();
+                    for (Integer s : pagesSimilarity.keySet()) {
+                        if (simil.get(pagesSimilarity.get(s)) == null) {
+                            simil.put(pagesSimilarity.get(s), Collections.singletonList(s));
+                        } else {
+                            List<Integer> list = new LinkedList<>(simil.get(pagesSimilarity.get(s)));
+                            list.add(s);
+                            simil.put(pagesSimilarity.get(s), list);
+                        }
                     }
-                    Double similarity = a / (documentLength * commandLength);
+                    List<Double> keys = new ArrayList<>(List.copyOf(simil.keySet()));
+                    Collections.sort(keys);
+                    System.out.println("Найдено:");
+                    for (int i = keys.size() - 1; i >= 0; i--) {
+                        for (Integer y : simil.get(keys.get(i)))
+                            System.out.println(keys.get(i) + ": " + index.get(y));
+                        //System.out.println(keys.get(i) + " " + simil.get(keys.get(i)));
+                    }
+                }
 
-                    pagesSimilarity.put(i, similarity);
-                }
-                HashMap<Double, List<Integer>> simil = new HashMap<>();
-                for (Integer s : pagesSimilarity.keySet()) {
-                    if (simil.get(pagesSimilarity.get(s)) == null) {
-                        simil.put(pagesSimilarity.get(s), Collections.singletonList(s));
-                    } else {
-                        List<Integer> list = new LinkedList<>(simil.get(pagesSimilarity.get(s)));
-                        list.add(s);
-                        simil.put(pagesSimilarity.get(s), list);
-                    }
-                }
-                List<Double> keys = new ArrayList<>(List.copyOf(simil.keySet()));
-                Collections.sort(keys);
-                System.out.print("Найдено:");
-                for (int i = keys.size() - 1; i >= 0; i--) {
-                    for (Integer y : simil.get(keys.get(i)))
-                        System.out.println(keys.get(i) + ": " + index.get(y));
-                    //System.out.println(keys.get(i) + " " + simil.get(keys.get(i)));
-                }
             }else{
                 System.out.println("Uncorrect command");
             }
@@ -99,9 +105,9 @@ public class VectorSearch {
         int k = words.length;
 //        пересчитать длину без команд
         for (int i = 0; i < words.length; i++) {
-            if (!(words[i].equals("AND")|words[i].equals("OR"))) {
+            if (!(words[i].equals("and")|words[i].equals("or"))) {
                 Double a = 1.0;
-                if (words[i].equals("NOT")) {
+                if (words[i].equals("not")) {
                     i++;
                     a = -a;
                     k--;
@@ -125,7 +131,9 @@ public class VectorSearch {
                                                              Map<String, List<Double>> keyWordsData) {
         Map<String, Double> result = new HashMap<>();
         for (String i: keyWordsTF.keySet()) {
-            result.put(i, keyWordsTF.get(i)*keyWordsData.get(i).get(0));
+            if (keyWordsTF.containsKey(i)) {
+                result.put(i, keyWordsTF.get(i)*keyWordsData.get(i).get(0));
+            }
         }
         return result;
     }
@@ -153,6 +161,16 @@ public class VectorSearch {
         }
         return keyWordsData;
     }
+
+    public static Map<String, List<Double>> getKeyWordsData(Set<String> keyWords,
+                                                            Map<String, List<Double>> allWordsData) {
+        Map<String, List<Double>> keyWordsData = new HashMap<>();
+        for (String keyword: keyWords) {
+            keyWordsData.put(keyword, allWordsData.get(keyword));
+        }
+        return keyWordsData;
+    }
+
     public static Map<String, List<Double>> readAllWordsData(String indexPath) {
         Map<String, List<Double>> keyWordsData = new HashMap<>();
         try(BufferedReader br = new BufferedReader(new FileReader(indexPath))) {
@@ -172,6 +190,9 @@ public class VectorSearch {
         }
         return keyWordsData;
     }
+
+
+
     @Test
     public void testReadKeyWordsData(){
         String indexPath = "Tasks/task3/index total.txt";
